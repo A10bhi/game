@@ -1,0 +1,346 @@
+/* ==========================================================================
+   Twogether — shared design system
+   Deep-plum "game night" palette, chunky pill buttons, hard offset shadows
+   instead of soft blur — meant to feel like a board-game box, not a SaaS app.
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --ink: #2B1B3D;
+  --bg: #241730;
+  --bg-deep: #180F22;
+  --paper: #FFF4E3;
+  --paper-soft: #FFEBCF;
+  --gold: #FFC53D;
+  --coral: #FF6B6B;
+  --mint: #4ECDC4;
+  --light-text: #FFF4E3;
+  --muted: #C9BBD9;
+  --p1: #FFC53D;
+  --p2: #FF6B6B;
+
+  --radius-lg: 24px;
+  --radius-md: 16px;
+  --radius-sm: 10px;
+  --border: 3px;
+  --shadow-off: 5px;
+
+  --font-display: 'Baloo 2', ui-rounded, 'Segoe UI', sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: var(--font-body);
+  background:
+    radial-gradient(circle at 15% 10%, rgba(255, 197, 61, 0.10), transparent 40%),
+    radial-gradient(circle at 85% 85%, rgba(78, 205, 196, 0.10), transparent 40%),
+    var(--bg);
+  color: var(--light-text);
+  min-height: 100vh;
+  line-height: 1.5;
+}
+
+h1, h2, h3, .display {
+  font-family: var(--font-display);
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.15;
+}
+
+p { margin: 0 0 1em; }
+a { color: inherit; }
+
+:focus-visible {
+  outline: 3px solid var(--mint);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+}
+
+/* ---------- layout ---------- */
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 20px 60px;
+}
+
+.topbar {
+  width: 100%;
+  max-width: 720px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--light-text);
+  text-decoration: none;
+}
+
+.brand-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  background: var(--gold);
+  color: var(--ink);
+  font-size: 1.3rem;
+  border: var(--border) solid var(--ink);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+
+main {
+  width: 100%;
+  max-width: 720px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+/* ---------- cards ---------- */
+
+.card {
+  width: 100%;
+  background: var(--paper);
+  color: var(--ink);
+  border: var(--border) solid var(--ink);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-off) var(--shadow-off) 0 rgba(0,0,0,0.35);
+  padding: 32px;
+}
+
+.card h2 { color: var(--ink); }
+
+.card-muted {
+  background: rgba(255, 244, 227, 0.06);
+  border: 2px dashed rgba(255, 244, 227, 0.35);
+  color: var(--muted);
+  border-radius: var(--radius-md);
+  padding: 20px 24px;
+}
+
+/* ---------- form controls ---------- */
+
+label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 6px;
+  color: var(--ink);
+}
+
+input[type="text"] {
+  width: 100%;
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  padding: 13px 16px;
+  border: var(--border) solid var(--ink);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  color: var(--ink);
+}
+
+input[type="text"]:focus {
+  outline: none;
+  border-color: var(--mint);
+  box-shadow: 0 0 0 3px rgba(78, 205, 196, 0.35);
+}
+
+.field { margin-bottom: 18px; }
+.hint { font-size: 0.85rem; color: #6b5c80; margin-top: 6px; }
+
+/* ---------- buttons ---------- */
+
+.btn {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: 0.2px;
+  border: var(--border) solid var(--ink);
+  border-radius: 999px;
+  padding: 14px 28px;
+  cursor: pointer;
+  color: var(--ink);
+  background: var(--paper);
+  box-shadow: 4px 4px 0 var(--ink);
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn:hover { transform: translate(-1px, -1px); box-shadow: 5px 5px 0 var(--ink); }
+.btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 4px 4px 0 var(--ink);
+}
+
+.btn-primary { background: var(--gold); }
+.btn-secondary { background: var(--mint); }
+.btn-coral { background: var(--coral); color: var(--ink); }
+.btn-block { width: 100%; }
+.btn-ghost {
+  background: transparent;
+  color: var(--light-text);
+  border-color: var(--muted);
+  box-shadow: none;
+}
+.btn-ghost:hover { box-shadow: none; border-color: var(--light-text); }
+.btn-sm { padding: 9px 18px; font-size: 0.9rem; }
+
+.btn-row {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+.btn-row .btn { flex: 1; }
+
+/* ---------- room code ---------- */
+
+.room-code {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 2.6rem;
+  letter-spacing: 0.12em;
+  color: var(--ink);
+  background: var(--paper-soft);
+  border: var(--border) dashed var(--ink);
+  border-radius: var(--radius-md);
+  padding: 14px 20px;
+  text-align: center;
+}
+
+/* ---------- status pill ---------- */
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: 2px solid var(--ink);
+}
+.status.waiting { background: var(--paper-soft); color: var(--ink); }
+.status.connected { background: var(--mint); color: var(--ink); }
+.status .dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: currentColor;
+}
+.status.waiting .dot { animation: pulse 1.4s ease-in-out infinite; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
+
+/* ---------- game picker ---------- */
+
+.game-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  width: 100%;
+}
+
+.game-tile {
+  background: var(--paper);
+  border: var(--border) solid var(--ink);
+  border-radius: var(--radius-md);
+  box-shadow: 4px 4px 0 rgba(0,0,0,0.35);
+  padding: 22px 18px;
+  text-align: left;
+  cursor: pointer;
+  font-family: var(--font-body);
+  color: var(--ink);
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+.game-tile:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 rgba(0,0,0,0.35); }
+.game-tile:active { transform: translate(1px, 1px); box-shadow: 2px 2px 0 rgba(0,0,0,0.35); }
+.game-tile .emoji { font-size: 2rem; display: block; margin-bottom: 8px; }
+.game-tile .name { font-family: var(--font-display); font-weight: 700; font-size: 1.2rem; display: block; margin-bottom: 4px; }
+.game-tile .desc { font-size: 0.88rem; color: #5c4d70; }
+button.game-tile { width: 100%; }
+button.game-tile:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+  transform: none;
+  box-shadow: 4px 4px 0 rgba(0,0,0,0.35);
+}
+
+/* ---------- scoreboard ---------- */
+
+.scoreboard {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+.score-chip {
+  flex: 1;
+  border: var(--border) solid var(--ink);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  text-align: center;
+  background: var(--paper);
+  color: var(--ink);
+}
+.score-chip.me { box-shadow: 4px 4px 0 var(--mint); }
+.score-chip.opp { box-shadow: 4px 4px 0 var(--coral); }
+.score-chip .label { font-size: 0.78rem; font-weight: 600; color: #6b5c80; }
+.score-chip .value { font-family: var(--font-display); font-size: 1.8rem; font-weight: 800; }
+
+/* ---------- utility ---------- */
+
+.hidden { display: none !important; }
+.center { text-align: center; }
+.stack { display: flex; flex-direction: column; gap: 14px; }
+.row { display: flex; align-items: center; gap: 10px; }
+.muted-text { color: var(--muted); }
+.small { font-size: 0.85rem; }
+
+.error-box {
+  background: rgba(255, 107, 107, 0.15);
+  border: 2px solid var(--coral);
+  color: var(--light-text);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  font-size: 0.9rem;
+}
+
+footer {
+  margin-top: 40px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  text-align: center;
+}
+
+@media (max-width: 480px) {
+  .card { padding: 22px; }
+  .room-code { font-size: 2rem; }
+}

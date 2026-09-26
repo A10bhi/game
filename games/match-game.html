@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mind Meld — Twogether</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💭</text></svg>">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+  .progress {
+    width: 100%;
+    height: 10px;
+    border-radius: 999px;
+    background: rgba(255,244,227,0.15);
+    border: 2px solid var(--ink);
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--mint);
+    width: 0%;
+    transition: width 0.25s ease;
+  }
+  .choice-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+  }
+  .choice-btn {
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 1.02rem;
+    padding: 16px;
+    border: var(--border) solid var(--ink);
+    border-radius: var(--radius-md);
+    background: var(--paper-soft);
+    color: var(--ink);
+    cursor: pointer;
+    box-shadow: 3px 3px 0 rgba(0,0,0,0.3);
+  }
+  .choice-btn:hover { background: #fff; }
+  .choice-btn.picked { background: var(--gold); }
+  .choice-btn:disabled { cursor: not-allowed; opacity: 0.7; }
+
+  .reveal-cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .reveal-card {
+    border: var(--border) solid var(--ink);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    background: var(--paper-soft);
+    text-align: center;
+  }
+  .reveal-card .who { font-size: 0.8rem; color: #6b5c80; font-weight: 600; margin-bottom: 6px; }
+  .reveal-card .ans { font-family: var(--font-display); font-weight: 700; font-size: 1.15rem; }
+  .match-banner {
+    text-align: center;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.3rem;
+    padding: 10px;
+    border-radius: var(--radius-sm);
+  }
+  .match-banner.yes { background: rgba(78,205,196,0.25); color: var(--mint); }
+  .match-banner.no { background: rgba(255,107,107,0.2); color: var(--coral); }
+
+  .overlay {
+    position: fixed; inset: 0;
+    background: var(--bg-deep);
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 14px;
+    z-index: 10; text-align: center; padding: 20px;
+  }
+  .spinner {
+    width: 44px; height: 44px;
+    border: 5px solid rgba(255,244,227,0.25);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div class="overlay" id="overlay">
+  <div class="spinner"></div>
+  <p id="overlay-text">Reconnecting you to the room…</p>
+</div>
+
+<div class="page">
+  <div class="topbar">
+    <a class="brand" href="../lobby.html"><span class="brand-badge">💭</span> Mind Meld</a>
+    <span class="room-code" id="room-code" style="font-size:1rem; padding:6px 14px;">-----</span>
+  </div>
+
+  <main>
+    <div class="scoreboard">
+      <div class="score-chip me">
+        <div class="label">Matches</div>
+        <div class="value" id="match-score">0</div>
+      </div>
+      <div class="score-chip opp">
+        <div class="label">Question</div>
+        <div class="value" id="q-counter">1/16</div>
+      </div>
+    </div>
+    <div class="progress"><div class="progress-fill" id="progress-fill"></div></div>
+
+    <div class="card stack" id="question-card">
+      <h2 id="question-text">Loading…</h2>
+
+      <div id="choice-area" class="choice-grid hidden"></div>
+
+      <div id="text-area" class="stack hidden">
+        <input type="text" id="text-answer" maxlength="60" placeholder="Type your answer…" autocomplete="off">
+        <button class="btn btn-primary btn-block" id="text-lock-btn">Lock in 🔒</button>
+      </div>
+
+      <div id="waiting-note" class="card-muted center hidden">Locked in! Waiting for your friend…</div>
+    </div>
+
+    <div id="reveal-card" class="card stack hidden">
+      <div class="reveal-cols">
+        <div class="reveal-card"><div class="who" id="reveal-me-name">You</div><div class="ans" id="reveal-me-ans"></div></div>
+        <div class="reveal-card"><div class="who" id="reveal-opp-name">Friend</div><div class="ans" id="reveal-opp-ans"></div></div>
+      </div>
+      <div class="match-banner" id="match-banner"></div>
+      <button class="btn btn-primary btn-block" id="next-btn">Next question →</button>
+    </div>
+
+    <div id="final-card" class="card center stack hidden">
+      <h2 id="final-heading">Great sync!</h2>
+      <p id="final-sub" class="muted-text" style="color:#6b5c80;"></p>
+      <button class="btn btn-primary" id="play-again-btn">Play again</button>
+    </div>
+
+    <a class="btn btn-ghost btn-sm" href="../lobby.html">← Back to lobby</a>
+  </main>
+</div>
+
+<script type="module" src="match-game.js"></script>
+</body>
+</html>

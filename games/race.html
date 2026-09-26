@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rally Race — Twogether</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏎️</text></svg>">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+  .track-wrap {
+    width: 100%;
+    max-width: 820px;
+    background: var(--paper);
+    border: var(--border) solid var(--ink);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-off) var(--shadow-off) 0 rgba(0,0,0,0.35);
+    padding: 12px;
+    position: relative;
+  }
+  canvas {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: var(--radius-md);
+    background: #cdeccb;
+  }
+  .race-hud {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 820px;
+  }
+  .lap-chip {
+    font-family: var(--font-display);
+    font-weight: 700;
+    padding: 8px 16px;
+    border-radius: 999px;
+    border: 2px solid var(--ink);
+  }
+  .lap-chip.me { background: var(--gold); color: var(--ink); }
+  .lap-chip.opp { background: var(--coral); color: var(--ink); }
+
+  .center-overlay {
+    position: absolute;
+    inset: 12px;
+    background: rgba(24, 15, 34, 0.72);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+    padding: 20px;
+    color: var(--light-text);
+  }
+  .countdown-num {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 5rem;
+    color: var(--gold);
+  }
+  .controls-hint {
+    display: flex;
+    gap: 18px;
+    justify-content: center;
+    flex-wrap: wrap;
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+  kbd {
+    background: var(--paper);
+    color: var(--ink);
+    border: 2px solid var(--ink);
+    border-radius: 6px;
+    padding: 2px 7px;
+    font-family: var(--font-body);
+    font-weight: 700;
+  }
+
+  .overlay {
+    position: fixed; inset: 0;
+    background: var(--bg-deep);
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 14px;
+    z-index: 10; text-align: center; padding: 20px;
+  }
+  .spinner {
+    width: 44px; height: 44px;
+    border: 5px solid rgba(255,244,227,0.25);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div class="overlay" id="overlay">
+  <div class="spinner"></div>
+  <p id="overlay-text">Reconnecting you to the room…</p>
+</div>
+
+<div class="page">
+  <div class="topbar">
+    <a class="brand" href="../lobby.html"><span class="brand-badge">🏎️</span> Rally Race</a>
+    <span class="room-code" id="room-code" style="font-size:1rem; padding:6px 14px;">-----</span>
+  </div>
+
+  <main>
+    <div class="race-hud">
+      <span class="lap-chip me" id="me-lap">You: Lap 0/3</span>
+      <span class="lap-chip opp" id="opp-lap">Friend: Lap 0/3</span>
+    </div>
+
+    <div class="track-wrap">
+      <canvas id="track" width="800" height="500"></canvas>
+      <div class="center-overlay hidden" id="center-overlay">
+        <div id="center-content"></div>
+      </div>
+    </div>
+
+    <p class="controls-hint">
+      <span><kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd> or <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></span>
+      <span>Pass the glowing gate, then cross the start line to complete a lap</span>
+    </p>
+
+    <a class="btn btn-ghost btn-sm" href="../lobby.html">← Back to lobby</a>
+  </main>
+</div>
+
+<script type="module" src="race.js"></script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Room — Twogether</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎮</text></svg>">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="page">
+  <div class="topbar">
+    <a class="brand" href="index.html"><span class="brand-badge">🎮</span> Twogether</a>
+  </div>
+
+  <main>
+    <div class="card center stack">
+      <p class="muted-text small" style="color:#6b5c80; margin-bottom:0;">Send this code to your friend</p>
+      <div class="room-code" id="room-code">-----</div>
+      <button class="btn btn-secondary btn-sm" id="copy-link-btn">🔗 Copy invite link</button>
+      <div id="status" class="status waiting" style="align-self:center;">
+        <span class="dot"></span> <span id="status-text">Waiting for your friend…</span>
+      </div>
+      <div id="troubleshoot" class="card-muted small hidden" style="text-align:left;">
+        <strong>Still waiting?</strong> A few things to check:
+        <ul style="margin:8px 0 0; padding-left:20px;">
+          <li>If the relay server hasn't been used in a while, it can take up to a minute to wake back up — give it a moment before trying anything else.</li>
+          <li>Make sure you're both using the <em>exact same</em> room code — the invite link avoids typos entirely.</li>
+          <li>Open your browser console (F12) — if it says <code>SERVER_URL</code> is still a placeholder, the site's owner needs to finish the server setup in <code>server/README.md</code>.</li>
+          <li>Both of you need this page open <em>at the same time</em> — it's a live connection, not a saved game.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card stack">
+      <h2>Choose a game</h2>
+      <p class="hint" style="margin-top:-8px;">Either of you can pick — you'll both jump in together.</p>
+      <div class="game-grid" id="game-buttons">
+        <button class="game-tile" data-game="dots">
+          <span class="emoji">⬜</span>
+          <span class="name">Dots &amp; Boxes</span>
+          <span class="desc">Take turns. Complete a box, go again.</span>
+        </button>
+        <button class="game-tile" data-game="match">
+          <span class="emoji">💭</span>
+          <span class="name">Mind Meld</span>
+          <span class="desc">Answer privately, reveal together.</span>
+        </button>
+        <button class="game-tile" data-game="race">
+          <span class="emoji">🏎️</span>
+          <span class="name">Rally Race</span>
+          <span class="desc">Arrow keys or WASD. 3 laps.</span>
+        </button>
+      </div>
+    </div>
+
+    <button class="btn btn-ghost btn-sm" id="leave-btn">Leave room</button>
+  </main>
+</div>
+
+<script type="module" src="js/lobby.js"></script>
+</body>
+</html>
