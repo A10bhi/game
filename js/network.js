@@ -7,13 +7,20 @@
 //
 // ↓↓↓ REQUIRED: set this to your deployed server's URL after following
 // /server/README.md. It must start with wss:// (secure WebSocket).
-const SERVER_URL = 'wss://game-kqz6.onrender.com';
+const SERVER_URL = 'wss://YOUR-SERVICE-NAME.onrender.com';
 
 let socket = null;
 let room = null;
 
 function makeRoom(roomCode) {
   const name = sessionStorage.getItem('tg_name') || 'Friend';
+  // Stable per-player id, generated once at create/join time and reused on
+  // every page (lobby, then whichever game). Lets the server recognize
+  // "same player, next page" instead of mistaking it for a third person —
+  // without this, moving from the lobby to a game could get rejected as
+  // "room full" if the old page's connection hadn't been noticed as
+  // closed yet.
+  const sessionId = sessionStorage.getItem('tg_session') || '';
   const peerJoinCbs = [];
   const peerLeaveCbs = [];
   const actionHandlers = {};
@@ -28,7 +35,7 @@ function makeRoom(roomCode) {
   socket = new WebSocket(SERVER_URL);
 
   socket.addEventListener('open', () => {
-    socket.send(JSON.stringify({ type: 'join', room: roomCode, name }));
+    socket.send(JSON.stringify({ type: 'join', room: roomCode, name, session: sessionId }));
   });
 
   socket.addEventListener('message', (event) => {
@@ -98,6 +105,15 @@ export function buildInviteLink(roomCode) {
   const url = new URL('index.html', window.location.href);
   url.searchParams.set('room', roomCode);
   return url.toString();
+}
+
+/** A stable per-player id — generate once when creating/joining a room,
+ * store it, and reuse it on every subsequent page for this session. */
+export function generateSessionId() {
+  if (window.crypto && typeof window.crypto.randomUUID === 'function') {
+    return window.crypto.randomUUID();
+  }
+  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
 }
 
 /** 5-character room code, uppercase, without easily-confused characters. */
