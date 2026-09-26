@@ -1,4 +1,4 @@
-import { generateRoomCode } from './network.js';
+import { generateRoomCode, generateSessionId } from './network.js';
 
 const nameInput = document.getElementById('name');
 const params = new URLSearchParams(window.location.search);
@@ -25,6 +25,7 @@ function startSession(roomCode, isHost) {
   sessionStorage.setItem('tg_name', name);
   sessionStorage.setItem('tg_room', roomCode);
   sessionStorage.setItem('tg_host', isHost ? 'true' : 'false');
+  sessionStorage.setItem('tg_session', generateSessionId());
   window.location.href = 'lobby.html';
 }
 
