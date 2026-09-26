@@ -7,7 +7,7 @@
 //
 // ↓↓↓ REQUIRED: set this to your deployed server's URL after following
 // /server/README.md. It must start with wss:// (secure WebSocket).
-const SERVER_URL = 'wss:https://game-kqz6.onrender.com';
+const SERVER_URL = 'wss://game-kqz6.onrender.com';
 
 let socket = null;
 let room = null;
