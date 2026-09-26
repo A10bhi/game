@@ -14,7 +14,7 @@ picture entirely.
 
 Protocol (JSON messages over the WebSocket):
   Client -> Server
-    {"type": "join", "room": "ABCDE", "name": "Alex"}
+    {"type": "join", "room": "ABCDE", "name": "Alex", "session": "<stable id>"}
     {"type": "relay", "action": "game", "data": {...}}   # forwarded as-is
                                                           # to the other peer
   Server -> Client
@@ -26,6 +26,15 @@ Protocol (JSON messages over the WebSocket):
 
 Run locally:   python3 server.py            (listens on PORT, default 10000)
 Deploy: see the README in this folder.
+
+Rooms are keyed by each player's "session" id, not by raw connection count.
+The site's frontend generates one stable id per player when they first
+create/join a room, and reuses it on every page (lobby, then whichever
+game they pick) — so when a page change opens a new connection, the
+server recognizes it as the *same* player reconnecting rather than a
+third person trying to join. Without this, a normal lobby -> game page
+transition could get incorrectly rejected as "room full", because the
+old connection isn't always gone yet by the time the new one arrives.
 """
 
 import asyncio
@@ -34,11 +43,12 @@ import hashlib
 import json
 import os
 import struct
+import uuid
 
 WS_GUID = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
 MAX_PER_ROOM = 2
 
-# room_code -> list of {"writer": StreamWriter, "name": str}
+# room_code -> { session_id: {"writer": StreamWriter, "name": str} }
 rooms = {}
 
 
@@ -103,13 +113,8 @@ async def send_json(writer: asyncio.StreamWriter, obj: dict) -> bool:
         return False
 
 
-def remove_client(room_code, client_info):
-    peers = rooms.get(room_code)
-    if not peers:
-        return
-    peers[:] = [p for p in peers if p is not client_info]
-    if not peers:
-        rooms.pop(room_code, None)
+def new_session_id() -> str:
+    return uuid.uuid4().hex
 
 
 async def handle_client(reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
@@ -146,6 +151,7 @@ async def handle_client(reader: asyncio.StreamReader, writer: asyncio.StreamWrit
     await writer.drain()
 
     room_code = None
+    session_id = None
     client_info = None
 
     try:
@@ -173,24 +179,36 @@ async def handle_client(reader: asyncio.StreamReader, writer: asyncio.StreamWrit
             if mtype == "join":
                 code = str(msg.get("room", "")).strip().upper()
                 name = str(msg.get("name", "Friend")).strip()[:24] or "Friend"
+                sid = str(msg.get("session", "")).strip() or new_session_id()
                 if not code:
                     await send_json(writer, {"type": "error", "message": "Missing room code"})
                     continue
-                peers = rooms.setdefault(code, [])
-                if len(peers) >= MAX_PER_ROOM:
+
+                peers = rooms.setdefault(code, {})
+                is_reconnect = sid in peers
+                if not is_reconnect and len(peers) >= MAX_PER_ROOM:
                     await send_json(writer, {"type": "error", "message": "That room already has two players"})
                     continue
+
                 room_code = code
+                session_id = sid
                 client_info = {"writer": writer, "name": name}
-                for p in peers:
-                    await send_json(p["writer"], {"type": "peer-joined", "name": name})
-                    await send_json(writer, {"type": "peer-joined", "name": p["name"]})
-                peers.append(client_info)
+
+                # Tell whoever's already here (this also covers the
+                # reconnect case, since a fresh page load has fresh JS
+                # state that needs its own "peer-joined" to know someone
+                # is there), and tell the (re)joiner about everyone else.
+                for other_sid, p in peers.items():
+                    if other_sid != session_id:
+                        await send_json(p["writer"], {"type": "peer-joined", "name": name})
+                        await send_json(writer, {"type": "peer-joined", "name": p["name"]})
+
+                peers[session_id] = client_info
                 await send_json(writer, {"type": "joined", "room": room_code})
 
             elif mtype == "relay" and room_code:
-                for p in rooms.get(room_code, []):
-                    if p is not client_info:
+                for other_sid, p in rooms.get(room_code, {}).items():
+                    if other_sid != session_id:
                         await send_json(p["writer"], {
                             "type": "relay",
                             "action": msg.get("action"),
@@ -200,10 +218,20 @@ async def handle_client(reader: asyncio.StreamReader, writer: asyncio.StreamWrit
     except (asyncio.IncompleteReadError, ConnectionResetError, BrokenPipeError):
         pass
     finally:
-        if room_code and client_info:
-            remove_client(room_code, client_info)
-            for p in rooms.get(room_code, []):
-                await send_json(p["writer"], {"type": "peer-left"})
+        if room_code and session_id:
+            peers = rooms.get(room_code, {})
+            # Only clean up / notify if THIS connection is still the one
+            # on record for this session. If a newer connection (e.g. the
+            # same player's next page) already took over this session id,
+            # this is just a stale socket finally noticing it's dead —
+            # the player never actually left, so stay quiet.
+            if peers.get(session_id) is client_info:
+                peers.pop(session_id, None)
+                if not peers:
+                    rooms.pop(room_code, None)
+                else:
+                    for p in peers.values():
+                        await send_json(p["writer"], {"type": "peer-left"})
         try:
             writer.close()
         except Exception:
